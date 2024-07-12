@@ -51,6 +51,8 @@ paths:
   /api/organisations:
     post:
       summary: Create a new organisation
+      security:
+       - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -71,5 +73,20 @@ paths:
         '403':
           description: Forbidden, user does not have permission
 
-security:
-  - bearerAuth: []
+
+
+/api/organisations:
+  get:
+    summary: get all organisations
+    security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+    responses:
+        '200':
+          description: Organisation successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/Organisation'
