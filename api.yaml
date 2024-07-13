@@ -165,8 +165,42 @@ components:
           type: string
           format: date-time
 
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+        region_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - code
+        - region_id
+        - created_at
+
+    Region:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - name
+
 paths:
-  /auth/register:
+  /api/auth/register:
     post:
       summary: "Create a user"
       requestBody:
@@ -185,7 +219,7 @@ paths:
         400:
           description: "Bad request, invalid input"
 
-  /auth/login:
+  /api/auth/login:
     post:
       summary: "User login"
       requestBody:
@@ -212,7 +246,7 @@ paths:
         400:
           description: "Bad request, invalid input"
 
-  /users/{id}:
+  /api/users/{id}:
     get:
       summary: "Fetch/Get User"
       parameters:
@@ -718,5 +752,214 @@ paths:
           description: Post does not exist
         "400":
           description: Bad request
+        "401":
+          description: Unauthorized, authentication required
+
+  /api/blog/{id}:
+    delete:
+      summary: Delete a blog post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Blog post deleted successfully
+        "401":
+          description: Unauthorized, authentication required
+
+  /api/languages:
+    post:
+    summary: Create a new language
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Language"
+    responses:
+      "201":
+        description: Language created successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Language"
+      "401":
+        description: Unauthorized, authentication required
+
+    get:
+      summary: Get all languages
+      responses:
+      "200":
+        description: List of all languages
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Language"
+      "401":
+        description: Unauthorized, authentication required
+
+  /api/languages/{id}:
+    get:
+    summary: Get a language by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Language details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Language"
+      "401":
+        description: Unauthorized, authentication required
+      "404":
+        description: Language does not exist
+
+    patch:
+      summary: Update a language
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NewLanguage"
+      responses:
+      "200":
+        description: Language updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Language"
+      "401":
+        description: Unauthorized, authentication required
+      "404":
+        description: Language does not exist
+
+  delete:
+    summary: Delete a language
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "204":
+        description: Language deleted successfully
+      "401":
+        description: Unauthorized, authentication required
+
+  /api/regions:
+    post:
+    summary: Create a new region
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Region"
+    responses:
+      "201":
+        description: Region created successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Region"
+      "401":
+        description: Unauthorized, authentication required
+    get:
+      summary: Get all regions
+      security:
+        - bearerAuth: []
+      responses:
+      "200":
+        description: List of all regions
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Region"
+
+  /api/regions/{id}:
+    get:
+      summary: Get a region by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Region details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Region"
+    patch:
+      summary: Update a region
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Region"
+      responses:
+        "200":
+          description: Region updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Region"
+        "401":
+          description: Unauthorized, authentication required
+
+    delete:
+      summary: Delete a region
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Region deleted successfully
         "401":
           description: Unauthorized, authentication required
