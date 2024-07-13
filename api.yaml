@@ -47,5 +47,46 @@ components:
       required:
         - name
 
-security:
-  - bearerAuth: []
+paths:
+  /api/organisations:
+    post:
+      summary: Create a new organisation
+      security:
+       - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organisation'
+      responses:
+        '201':
+          description: Organisation successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized, authentication required
+        '403':
+          description: Forbidden, user does not have permission
+
+
+
+/api/organisations:
+  get:
+    summary: get all organisations
+    security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+    responses:
+        '200':
+          description: Organisation successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/Organisation'
