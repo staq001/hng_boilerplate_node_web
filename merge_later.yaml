@@ -1,0 +1,286 @@
+openapi: 3.0.0
+info:
+  title: HNG Boilerplate API
+  description: A comprehensive API for managing various entities.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local server
+
+paths:
+  /:
+    get:
+      summary: "Landing page"
+      responses:
+        200:
+          description: "Landing page fetched"
+
+  /auth/register:
+    post:
+      description: "User creation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newUser"
+      responses:
+        201:
+          description: "user successfully created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
+
+  /auth/login:
+    post:
+      description: "User login"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                cookie_consent:
+                  type: string
+                  enum: ["accepted", "rejected"]
+      responses:
+        200:
+          description: "login successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
+
+  /users/{id}:
+    get:
+      description: "Fetch/Get User"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "User data fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/users/changePassword:
+    description: "Change user password"
+    patch:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                oldpassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: "user password changed successfully"
+
+  /api/organisations:
+    post:
+      description: "Organisation creation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organisation"
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: "Organisation created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organisation"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authenticated required"
+
+  /api/getOrganisations:
+    get:
+      description: "GET all organisations"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Organisations fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organisation"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/contact_us:
+    get:
+      description: "Contact page"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Contact page fetched successfully"
+
+  /api/blog/post:
+    post:
+      description: "create blog post"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Blog"
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: "Blog post successfully created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/blog/post/{id}:
+    get:
+      description: "Fetch a particular blog post"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Post successfully fetched"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/blog/getAllPosts:
+    get:
+      description: "Get all posts in user's blog"
+      responses:
+        200:
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    newUser:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - password
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        access_token:
+          type: string
+        cookie_consent_status:
+          type: string
+          enum: ["accepted", rejected]
+      required:
+        - name
+        - email
+    Organisation:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - name
+    Blog:
+      type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - text
+# security:
+#   - bearerAuth: []
