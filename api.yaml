@@ -495,8 +495,8 @@ paths:
         "403":
           description: Forbidden, admin access required
 
-/api/blog:
-  post:
+  /api/blog:
+    post:
     summary: Create post
     security:
       - bearerAuth: []
@@ -528,32 +528,35 @@ paths:
         "401":
           description: Unauthorized, authentication required
 
+  /api/blog/{Id}:
     patch:
-      summary: Update an post by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
+    summary: Update an post by ID
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
         required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Post"
+    responses:
+      "200":
+        description: Post successfully updated
         content:
           application/json:
+            message: Susccess
+            status: true
             schema:
               $ref: "#/components/schemas/Post"
-      responses:
-        "200":
-          description: Post successfully updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Post"
-        "404":
-          description: Post does not exist
-        "400":
-          description: Bad request
-        "401":
-          description: Unauthorized, authentication required
+      "404":
+        description: Post does not exist
+      "400":
+        description: Bad request
+      "401":
+        description: Unauthorized, authentication required
