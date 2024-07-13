@@ -3,9 +3,13 @@ import swagger from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
 import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
 const filePath = path.resolve(__dirname, '../api.yaml');
