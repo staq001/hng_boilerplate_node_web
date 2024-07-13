@@ -15,7 +15,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    User:
+    newUser:
       type: object
       properties:
         id:
@@ -27,6 +27,33 @@ components:
         email:
           type: string
         password:
+          type: string
+        language_id:
+          type: string
+        bio:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+      required:
+        - name
+        - email
+        - password
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
           type: string
         language_id:
           type: string
@@ -97,9 +124,7 @@ components:
             - flutterwave
             - lemonSqueezy
         user:
-          type: object
-          items:
-            $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/User"
         created_at:
           type: string
           format: date-time
@@ -130,9 +155,7 @@ components:
         body:
           type: string
         user:
-          type: object
-          items:
-            $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/User"
         status:
           type: string
           enum:
@@ -143,6 +166,95 @@ components:
           format: date-time
 
 paths:
+  /auth/register:
+    post:
+      summary: "Create a user"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newUser"
+      responses:
+        201:
+          description: "user successfully created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
+
+  /auth/login:
+    post:
+      summary: "User login"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                cookie_consent:
+                  type: string
+                  enum: ["accepted", "rejected"]
+      responses:
+        200:
+          description: "login successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
+
+  /users/{id}:
+    get:
+      summary: "Fetch/Get User"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "User data fetched successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/users/changePassword:
+    summary: "Change user password"
+    patch:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                oldpassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: "user password changed successfully"
+        400:
+          description: "Bad request, invalid inputs"
+
   /api/organisations:
     post:
       summary: Create a new organisation
@@ -285,6 +397,54 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized, authentication required
+
+  /api/users/search:
+    get:
+      summary: "Search for user"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
+
+  /api/organisations/search:
+    get:
+      summary: "Search for organisation"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: array
+      responses:
+        200:
+          description:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Organisation"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
 
   /api/notifications:
     get:
@@ -497,21 +657,24 @@ paths:
 
   /api/blog:
     post:
-    summary: Create post
-    security:
-      - bearerAuth: []
-    requestBody:
-      required: true
-    responses:
-      "200":
-        description: Post created
+      summary: Create post
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Post"
-      "401":
-        description: Unauthorized, authentication required
-
+      responses:
+        "200":
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "401":
+          description: Unauthorized, authentication required
     get:
       summary: Get all post
       security:
@@ -528,35 +691,32 @@ paths:
         "401":
           description: Unauthorized, authentication required
 
-  /api/blog/{Id}:
     patch:
-    summary: Update an post by ID
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-    requestBody:
-      required: true
-      content:
-        application/json:
+      summary: Update an post by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
           schema:
-            $ref: "#/components/schemas/Post"
-    responses:
-      "200":
-        description: Post successfully updated
+            type: string
+      requestBody:
+        required: true
         content:
           application/json:
-            message: Susccess
-            status: true
             schema:
               $ref: "#/components/schemas/Post"
-      "404":
-        description: Post does not exist
-      "400":
-        description: Bad request
-      "401":
-        description: Unauthorized, authentication required
+      responses:
+        "200":
+          description: Post successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post does not exist
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized, authentication required
