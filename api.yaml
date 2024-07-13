@@ -90,3 +90,123 @@ paths:
               schema:
                 type: array
                 $ref: '#/components/schemas/Organisation'
+         '401':
+          description: "Unauthorized, authentication required"
+
+/api/organisations/${id}:
+  get:
+    summary: get all organisations
+    security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+    responses:
+        '200':
+          description: Organisation successfully fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+          '404':
+          description: "Organisation does not exist"
+          '400':
+          description: "Bad request"
+          '401':
+          description: "Unauthorized, authentication required"
+  
+
+api/notifications:
+    get:
+      summary: Get all notifications
+      responses:
+        '200':
+          description: Notifications list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    message:
+                      type: string
+                    timestamp:
+                      type: string
+                      format: date-time
+        '401':
+          description: Unauthorized, authentication required
+      security:
+        - bearerAuth: []
+
+
+api/notifications/${id}:
+  get:
+    summary: Get one notification
+    response:
+    '200':
+      description: Notification successfully fetched
+      content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+            message:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+     '401':
+          description: Unauthorized, authentication required
+       '404':
+          description: "Notification does not exist"
+      security:
+        - bearerAuth: []
+
+
+ api/invite:
+    get:
+      summary: Generate an invite link
+      responses:
+        '200':
+          description: Invite link generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inviteLink:
+                    type: string
+        '401':
+          description: Unauthorized, authentication required
+      security:
+        - bearerAuth: []
+
+api/email:
+    post:
+      summary: Send an email to users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                subject:
+                  type: string
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Email sent successfully
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized, authentication required
+      security:
+        - bearerAuth: []
