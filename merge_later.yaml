@@ -42,11 +42,15 @@ paths:
         content:
           application/json:
             schema:
+              type: object
               properties:
                 email:
                   type: string
                 password:
                   type: string
+                cookie_consent:
+                  type: string
+                  enum: ["accepted", "rejected"]
       responses:
         200:
           description: "login successful"
@@ -79,6 +83,24 @@ paths:
           description: "Bad request"
         401:
           description: "Unauthorized, authentication required"
+
+  /api/users/changePassword:
+    description: "Change user password"
+    patch:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                oldpassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: "user password changed successfully"
 
   /api/organisations:
     post:
@@ -224,6 +246,11 @@ components:
           type: string
         email:
           type: string
+        access_token:
+          type: string
+        cookie_consent_status:
+          type: string
+          enum: ["accepted", rejected]
       required:
         - name
         - email
