@@ -26,6 +26,11 @@ components:
           type: string
         password:
           type: string
+         role:
+          type: string
+          enum:
+            - admin
+            - user
       required:
         - name
         - email
@@ -46,6 +51,50 @@ components:
             $ref: '#/components/schemas/User'
       required:
         - name
+
+      WaitlistEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - email
+
+         Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        date:
+          type: string
+          format: date-time
+        status:
+          type: string
+        userId:
+          type: string
+
+    ActivityLog:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        userId:
+          type: string
+
+
+
 
 paths:
   /api/organisations:
@@ -113,6 +162,85 @@ paths:
           description: "Bad request"
           '401':
           description: "Unauthorized, authentication required"
+   patch:
+      summary: Update an organisation by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organisation'
+      responses:
+        '200':
+          description: Organisation successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organisation'
+        '404':
+          description: Organisation does not exist
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized, authentication required
+
+    delete:
+      summary: Delete an organisation by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Organisation successfully deleted
+        '404':
+          description: Organisation does not exist
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized, authentication required
+
+
+ api/organisations/user/{userId}:
+    get:
+      summary: Get organisations by user ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Organisations successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organisation'
+        '404':
+          description: Organisations not found
+        '404':
+          description: User does not exist
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized, authentication required
   
 
 api/notifications:
@@ -210,3 +338,114 @@ api/email:
           description: Unauthorized, authentication required
       security:
         - bearerAuth: []
+
+
+api/waitlist:
+    get:
+      summary: Get waitlist entries
+      responses:
+        '200':
+          description: Waitlist data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WaitlistEntry'
+      security:
+        - bearerAuth: []
+
+
+api/waitlist:
+  post:
+    summary: Create waitlist
+    security:
+       - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitlistEntry'
+        response:
+          '200':
+          description: Waitlist created
+           '401':
+          description: Unauthorized, authentication required
+
+
+api/superadmin/users:
+    get:
+      summary: Get all users (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized, authentication required
+        '403':
+          description: Forbidden, admin access required
+    
+api/superadmin/organisations:
+    get:
+      summary: Get all organisations (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of organisations successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organisation'
+        '401':
+          description: Unauthorized, authentication required
+        '403':
+          description: Forbidden, admin access required
+
+api/superadmin/payments:
+    get:
+      summary: Get all payments (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of payments successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '401':
+          description: Unauthorized, authentication required
+        '403':
+          description: Forbidden, admin access required
+
+api/superadmin/activitylog:
+    get:
+      summary: Get activity log (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Activity log successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityLog'
+        '401':
+          description: Unauthorized, authentication required
+        '403':
+          description: Forbidden, admin access required
