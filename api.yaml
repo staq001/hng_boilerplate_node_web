@@ -20,13 +20,22 @@ components:
       properties:
         id:
           type: string
-        name:
+        first_name:
+          type: string
+        last_name:
           type: string
         email:
           type: string
         password:
           type: string
-         role:
+        language_id:
+          type: string
+        bio:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        role:
           type: string
           enum:
             - admin
@@ -45,27 +54,30 @@ components:
           type: string
         description:
           type: string
+        created_at:
+          type: string
+          format: date-time
         users:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       required:
         - name
 
-      WaitlistEntry:
+    WaitlistEntry:
       type: object
       properties:
         id:
           type: string
         email:
           type: string
-        createdAt:
+        created_at:
           type: string
           format: date-time
       required:
         - email
 
-         Payment:
+    Payment:
       type: object
       properties:
         id:
@@ -77,8 +89,20 @@ components:
           format: date-time
         status:
           type: string
-        userId:
+        provider:
           type: string
+          enum:
+            - stripe
+            - paypal
+            - flutterwave
+            - lemonSqueezy
+        user:
+          type: object
+          items:
+            $ref: "#/components/schemas/User"
+        created_at:
+          type: string
+          format: date-time
 
     ActivityLog:
       type: object
@@ -92,77 +116,100 @@ components:
           format: date-time
         userId:
           type: string
+        created_at:
+          type: string
+          format: date-time
 
-
-
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        user:
+          type: object
+          items:
+            $ref: "#/components/schemas/User"
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+        created_at:
+          type: string
+          format: date-time
 
 paths:
   /api/organisations:
     post:
       summary: Create a new organisation
       security:
-       - bearerAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organisation'
+              $ref: "#/components/schemas/Organisation"
       responses:
-        '201':
+        "201":
           description: Organisation successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'
-        '400':
+                $ref: "#/components/schemas/Organisation"
+        "400":
           description: Bad request, invalid input
-        '401':
+        "401":
           description: Unauthorized, authentication required
-        '403':
+        "403":
           description: Forbidden, user does not have permission
 
-
-
-/api/organisations:
-  get:
-    summary: get all organisations
-    security:
-      - bearerAuth: []
-      requestBody:
-        required: true
-    responses:
-        '200':
-          description: Organisation successfully fetched
+    get:
+      summary: Get all organisations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Organisations successfully fetched
           content:
             application/json:
               schema:
                 type: array
-                $ref: '#/components/schemas/Organisation'
-         '401':
-          description: "Unauthorized, authentication required"
+                items:
+                  $ref: "#/components/schemas/Organisation"
+        "401":
+          description: Unauthorized, authentication required
 
-/api/organisations/${id}:
-  get:
-    summary: get all organisations
-    security:
-      - bearerAuth: []
-      requestBody:
-        required: true
-    responses:
-        '200':
+  /api/organisations/{id}:
+    get:
+      summary: Get an organisation by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
           description: Organisation successfully fetched
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'
-          '404':
-          description: "Organisation does not exist"
-          '400':
-          description: "Bad request"
-          '401':
-          description: "Unauthorized, authentication required"
-   patch:
+                $ref: "#/components/schemas/Organisation"
+        "404":
+          description: Organisation does not exist
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized, authentication required
+
+    patch:
       summary: Update an organisation by ID
       security:
         - bearerAuth: []
@@ -177,19 +224,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organisation'
+              $ref: "#/components/schemas/Organisation"
       responses:
-        '200':
+        "200":
           description: Organisation successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'
-        '404':
+                $ref: "#/components/schemas/Organisation"
+        "404":
           description: Organisation does not exist
-        '400':
+        "400":
           description: Bad request
-        '401':
+        "401":
           description: Unauthorized, authentication required
 
     delete:
@@ -203,17 +250,16 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Organisation successfully deleted
-        '404':
+        "404":
           description: Organisation does not exist
-        '400':
+        "400":
           description: Bad request
-        '401':
+        "401":
           description: Unauthorized, authentication required
 
-
- /api/organisations/user/{userId}:
+  /api/organisations/user/{userId}:
     get:
       summary: Get organisations by user ID
       security:
@@ -225,29 +271,28 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Organisations successfully fetched
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organisation'
-        '404':
+                  $ref: "#/components/schemas/Organisation"
+        "404":
           description: Organisations not found
-        '404':
-          description: User does not exist
-        '400':
+        "400":
           description: Bad request
-        '401':
+        "401":
           description: Unauthorized, authentication required
-  
 
-/api/notifications:
+  /api/notifications:
     get:
       summary: Get all notifications
+      security:
+        - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Notifications list
           content:
             application/json:
@@ -263,43 +308,47 @@ paths:
                     timestamp:
                       type: string
                       format: date-time
-        '401':
+        "401":
           description: Unauthorized, authentication required
+
+  /api/notifications/{id}:
+    get:
+      summary: Get one notification by ID
       security:
         - bearerAuth: []
-
-
-/api/notifications/${id}:
-  get:
-    summary: Get one notification
-    response:
-    '200':
-      description: Notification successfully fetched
-      content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            id:
-              type: string
-            message:
-              type: string
-            timestamp:
-              type: string
-              format: date-time
-     '401':
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Notification successfully fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  message:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+        "401":
           description: Unauthorized, authentication required
-       '404':
-          description: "Notification does not exist"
-      security:
-        - bearerAuth: []
+        "404":
+          description: Notification does not exist
 
-
- /api/invite:
+  /api/invite:
     get:
       summary: Generate an invite link
+      security:
+        - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Invite link generated
           content:
             application/json:
@@ -308,14 +357,14 @@ paths:
                 properties:
                   inviteLink:
                     type: string
-        '401':
+        "401":
           description: Unauthorized, authentication required
-      security:
-        - bearerAuth: []
 
-/api/email:
+  /api/email:
     post:
       summary: Send an email to users
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -330,122 +379,181 @@ paths:
                 message:
                   type: string
       responses:
-        '200':
+        "200":
           description: Email sent successfully
-        '400':
+        "400":
           description: Bad request, invalid input
-        '401':
+        "401":
           description: Unauthorized, authentication required
-      security:
-        - bearerAuth: []
 
-
-/api/waitlist:
+  /api/waitlist:
     get:
       summary: Get waitlist entries
+      security:
+        - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Waitlist data
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/WaitlistEntry'
+                  $ref: "#/components/schemas/WaitlistEntry"
+        "401":
+          description: Unauthorized, authentication required
+
+    post:
+      summary: Create waitlist entry
       security:
         - bearerAuth: []
-
-
-/api/waitlist:
-  post:
-    summary: Create waitlist
-    security:
-       - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WaitlistEntry'
-        response:
-          '200':
-          description: Waitlist created
-           '401':
+              $ref: "#/components/schemas/WaitlistEntry"
+      responses:
+        "200":
+          description: Waitlist entry created
+        "401":
           description: Unauthorized, authentication required
 
-
-/api/superadmin/users:
+  /api/superadmin/users:
     get:
       summary: Get all users (Admin only)
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of users successfully fetched
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '401':
+                  $ref: "#/components/schemas/User"
+        "401":
           description: Unauthorized, authentication required
-        '403':
+        "403":
           description: Forbidden, admin access required
-    
-/api/superadmin/organisations:
+
+  /api/superadmin/organisations:
     get:
       summary: Get all organisations (Admin only)
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of organisations successfully fetched
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organisation'
-        '401':
+                  $ref: "#/components/schemas/Organisation"
+        "401":
           description: Unauthorized, authentication required
-        '403':
+        "403":
           description: Forbidden, admin access required
 
-/api/superadmin/payments:
+  /api/superadmin/payments:
     get:
       summary: Get all payments (Admin only)
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of payments successfully fetched
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Payment'
-        '401':
+                  $ref: "#/components/schemas/Payment"
+        "401":
           description: Unauthorized, authentication required
-        '403':
+        "403":
           description: Forbidden, admin access required
 
-/api/superadmin/activitylog:
+  /api/superadmin/activitylog:
     get:
       summary: Get activity log (Admin only)
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Activity log successfully fetched
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ActivityLog'
-        '401':
+                  $ref: "#/components/schemas/ActivityLog"
+        "401":
           description: Unauthorized, authentication required
-        '403':
+        "403":
           description: Forbidden, admin access required
+
+/api/blog:
+  post:
+    summary: Create post
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+    responses:
+      "200":
+        description: Post created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      "401":
+        description: Unauthorized, authentication required
+
+    get:
+      summary: Get all post
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Posts successfully fetched
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "401":
+          description: Unauthorized, authentication required
+
+    patch:
+      summary: Update an post by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "200":
+          description: Post successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post does not exist
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized, authentication required
