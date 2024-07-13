@@ -31,6 +31,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
 
   /auth/login:
     post:
@@ -52,6 +54,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request, invalid input"
 
   /users/{id}:
     get:
@@ -71,6 +75,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
 
   /api/organisations:
     post:
@@ -90,6 +98,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Organisation"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authenticated required"
 
   /api/getOrganisations:
     get:
@@ -103,6 +115,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Organisation"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
 
   /api/contact_us:
     get:
@@ -131,6 +147,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authentication required"
 
   /api/blog/post/{id}:
     get:
@@ -150,6 +170,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request, invalid input"
+        401:
+          description: "Unauthorized, authentication required"
 
   /api/blog/getAllPosts:
     get:
@@ -163,6 +187,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Blog"
+        400:
+          description: "Bad request"
+        401:
+          description: "Unauthorized, authentication required"
 
 components:
   securitySchemes:
