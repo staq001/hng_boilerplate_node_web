@@ -213,7 +213,7 @@ paths:
           description: Unauthorized, authentication required
 
 
- api/organisations/user/{userId}:
+ /api/organisations/user/{userId}:
     get:
       summary: Get organisations by user ID
       security:
@@ -243,7 +243,7 @@ paths:
           description: Unauthorized, authentication required
   
 
-api/notifications:
+/api/notifications:
     get:
       summary: Get all notifications
       responses:
@@ -269,7 +269,7 @@ api/notifications:
         - bearerAuth: []
 
 
-api/notifications/${id}:
+/api/notifications/${id}:
   get:
     summary: Get one notification
     response:
@@ -295,7 +295,7 @@ api/notifications/${id}:
         - bearerAuth: []
 
 
- api/invite:
+ /api/invite:
     get:
       summary: Generate an invite link
       responses:
@@ -313,7 +313,7 @@ api/notifications/${id}:
       security:
         - bearerAuth: []
 
-api/email:
+/api/email:
     post:
       summary: Send an email to users
       requestBody:
@@ -340,7 +340,7 @@ api/email:
         - bearerAuth: []
 
 
-api/waitlist:
+/api/waitlist:
     get:
       summary: Get waitlist entries
       responses:
@@ -356,7 +356,7 @@ api/waitlist:
         - bearerAuth: []
 
 
-api/waitlist:
+/api/waitlist:
   post:
     summary: Create waitlist
     security:
@@ -374,7 +374,7 @@ api/waitlist:
           description: Unauthorized, authentication required
 
 
-api/superadmin/users:
+/api/superadmin/users:
     get:
       summary: Get all users (Admin only)
       security:
@@ -393,7 +393,7 @@ api/superadmin/users:
         '403':
           description: Forbidden, admin access required
     
-api/superadmin/organisations:
+/api/superadmin/organisations:
     get:
       summary: Get all organisations (Admin only)
       security:
@@ -412,7 +412,7 @@ api/superadmin/organisations:
         '403':
           description: Forbidden, admin access required
 
-api/superadmin/payments:
+/api/superadmin/payments:
     get:
       summary: Get all payments (Admin only)
       security:
@@ -431,7 +431,7 @@ api/superadmin/payments:
         '403':
           description: Forbidden, admin access required
 
-api/superadmin/activitylog:
+/api/superadmin/activitylog:
     get:
       summary: Get activity log (Admin only)
       security:
