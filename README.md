@@ -22,7 +22,7 @@ The API follows RESTful principles and is defined using OpenAPI Specification (O
 
 ### API Documentation
 
-You can view the API documentation by opening the `api.yaml` file with an OpenAPI viewer or by using tools like Swagger UI.
+You can view the API documentation by opening the `api.yaml` file with an OpenAPI viewer or by using tools like [Swagger UI](https://hng-boilerplate-node-web-b2be.onrender.com/api-docs/).
 
 #### Example Endpoints
 
